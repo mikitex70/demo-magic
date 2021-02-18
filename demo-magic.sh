@@ -64,11 +64,34 @@ function usage() {
 ##
 function wait() {
   if [[ "$PROMPT_TIMEOUT" == "0" ]]; then
-    read -rs
+    #read cmdX -rs -p "entercmd: "
+    #echo ""
+    #read   -p "     [enter or cmd]: " cmdX
+    read  -rs cmdX
+    if [[ $cmdX != "" ]];
+    then
+      case $cmdX in
+      q)
+	      exit
+	    ;;
+      *)
+        echo  ""
+        echo ">${cmdX}"
+        ${cmdX}
+       	read -r -p "enter to cont..."
+        #echo -n ${DEMO_PROMPT}
+      esac
+    else
+      #echo -n XX${DEMO_PROMPT}
+      :
+    fi
+
   else
     read -rst "$PROMPT_TIMEOUT"
   fi
 }
+
+
 
 ##
 # print command only. Useful for when you want to pretend to run a command
