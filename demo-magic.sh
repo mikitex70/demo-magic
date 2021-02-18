@@ -83,13 +83,13 @@ function wait() {
         d)
           set -x
         ;;
-      nd)
+        nd)
           set +x
         ;;
-      q)
+        q)
 	        exit
-	    ;;
-      *)
+	      ;;
+        *)
           echo  ""
           echo ">${cmdX}"
           ${cmdX}
