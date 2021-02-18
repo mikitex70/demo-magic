@@ -71,19 +71,34 @@ function wait() {
     if [[ $cmdX != "" ]];
     then
       case $cmdX in
+        h)
+          echo "command\n"
+          echo "h help"
+          echo "q quit"
+          echo "d debug"
+          echo "nd no debug"
+          read -r -p "enter to cont..."
+          echo  -n ${DEMO_PROMPT}
+        ;;
+        d)
+          set -x
+        ;;
+      nd)
+          set +x
+        ;;
       q)
-	      exit
+	        exit
 	    ;;
       *)
-        echo  ""
-        echo ">${cmdX}"
-        ${cmdX}
-       	read -r -p "enter to cont..."
-        #echo -n ${DEMO_PROMPT}
+          echo  ""
+          echo ">${cmdX}"
+          ${cmdX}
+       	  read -r -p "enter to cont..."
+          #echo -n ${DEMO_PROMPT}
       esac
     else
-      #echo -n XX${DEMO_PROMPT}
-      :
+        #echo -n XX${DEMO_PROMPT}
+        :
     fi
 
   else
