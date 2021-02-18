@@ -97,7 +97,7 @@ function wait() {
           #echo -n ${DEMO_PROMPT}
       esac
     else
-        #echo -n XX${DEMO_PROMPT}
+        #echo -n ${DEMO_PROMPT}
         :
     fi
 
