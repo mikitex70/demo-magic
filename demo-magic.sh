@@ -10,6 +10,8 @@
 # ENTER. It simulates typing and runs commands.
 #
 ###############################################################################
+shopt -s expand_aliases
+source ~/.bashrc
 
 # the speed to "type" the text
 TYPE_SPEED=20
