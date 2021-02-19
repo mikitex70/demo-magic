@@ -92,7 +92,7 @@ function wait() {
         *)
           echo  ""
           echo ">${cmdX}"
-          ${cmdX}
+          eval ${cmdX}
        	  read -r -p "enter to cont..."
           #echo -n ${DEMO_PROMPT}
       esac
@@ -200,7 +200,7 @@ function run_cmd() {
 
   trap handle_cancel SIGINT
   stty -echoctl
-  eval "$@"
+  eval ${@}
   stty echoctl
   trap - SIGINT
 }
