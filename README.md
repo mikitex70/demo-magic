@@ -1,7 +1,5 @@
 # Demo Magic
 
-[forked:https://github.com/paxtonhare/demo-magic]
-
 demo-magic.sh is a handy shell script that enables you to script repeatable demos in a bash environment so you don't have to type as you present. Rather than trying to type commands when presenting you simply script them and let demo-magic.sh run them for you.
 
 ## Features
@@ -68,6 +66,25 @@ PROMPT_TIMEOUT=5
 wait
 
 ```
+
+With the argument `--prompt` the prompt is used for the input command, useful when used with `p` command. Example:
+
+```bash
+#!/bin/bash
+
+p "# Test for the wait with prompt..."
+PROMPT_TIMEOUT=5 wait --prompt
+pei "ls -l"
+```
+
+Without the `--prompt` option a similar effect (but less nice) can be obtained with:
+```bash
+p "# Test for the wait with prompt..."
+P ""
+PROMPT_TIMEOUT=5 wait
+pei "ls -l"
+```
+
 
 ### cmd
 Enters script into interactive mode and allows newly typed commands to be executed within the script

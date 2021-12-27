@@ -10,8 +10,6 @@
 # ENTER. It simulates typing and runs commands.
 #
 ###############################################################################
-shopt -s expand_aliases
-source ~/.bashrc
 
 # the speed to "type" the text
 TYPE_SPEED=20
@@ -39,6 +37,7 @@ WHITE="\033[1;37m"
 COLOR_RESET="\033[0m"
 
 C_NUM=0
+PREV_PROMPT=false  # if true, next prompt is skipped
 
 # prompt and command color which can be overriden
 DEMO_PROMPT="$ "
@@ -61,53 +60,39 @@ function usage() {
 }
 
 ##
-# wait for user to press ENTER
-# if $PROMPT_TIMEOUT > 0 this will be used as the max time for proceeding automatically
+# Renders the prompt
 ##
-function wait() {
-  if [[ "$PROMPT_TIMEOUT" == "0" ]]; then
-    #read cmdX -rs -p "entercmd: "
-    #echo ""
-    #read   -p "     [enter or cmd]: " cmdX
-    read  -rs cmdX
-    if [[ $cmdX != "" ]];
-    then
-      case $cmdX in
-        h)
-          echo "command\n"
-          echo "h help"
-          echo "q quit"
-          echo "d debug"
-          echo "nd no debug"
-          read -r -p "enter to cont..."
-          echo  -n ${DEMO_PROMPT}
-        ;;
-        d)
-          set -x
-        ;;
-        nd)
-          set +x
-        ;;
-        q)
-	        exit
-	      ;;
-        *)
-          echo  ""
-          echo ">${cmdX}"
-          eval ${cmdX}
-       	  read -r -p "enter to cont..."
-          #echo -n ${DEMO_PROMPT}
-      esac
-    else
-        #echo -n ${DEMO_PROMPT}
-        :
-    fi
+function get_prompt() {
+  # render the prompt
+  x=$(PS1="$DEMO_PROMPT" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
 
+  # show command number is selected
+  if $SHOW_CMD_NUMS; then
+   printf "[$((++C_NUM))] $x"
   else
-    read -rst "$PROMPT_TIMEOUT"
+   printf "$x"
   fi
 }
 
+##
+# wait for user to press ENTER
+# if $PROMPT_TIMEOUT > 0 this will be used as the max time for proceeding automatically
+# if argument `--prompt` is present, the prompt is emitted
+##
+function wait() {
+  local prompt=""
+
+  if [[ "$1" == "--prompt" ]]; then
+    prompt="$(get_prompt)"
+    PREV_PROMPT=true
+  fi
+
+  if [[ "$PROMPT_TIMEOUT" == "0" ]]; then
+    read -rsp "$prompt"
+  else
+    read -rst "$PROMPT_TIMEOUT" -p "$prompt"
+  fi
+}
 
 
 ##
@@ -125,15 +110,8 @@ function p() {
     cmd=$DEMO_CMD_COLOR$1$COLOR_RESET
   fi
 
-  # render the prompt
-  x=$(PS1="$DEMO_PROMPT" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
-
-  # show command number is selected
-  if $SHOW_CMD_NUMS; then
-   printf "[$((++C_NUM))] $x"
-  else
-   printf "$x"
-  fi
+  [[ $PREV_PROMPT = false ]] && echo -n "$(get_prompt)"
+  PREV_PROMPT=true
 
   # wait for the user to press a key before typing the command
   if [ $NO_WAIT = false ]; then
@@ -202,7 +180,7 @@ function run_cmd() {
 
   trap handle_cancel SIGINT
   stty -echoctl
-  eval ${@}
+  eval "$@"
   stty echoctl
   trap - SIGINT
 }
